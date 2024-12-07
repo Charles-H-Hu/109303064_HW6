@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1A2B Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>109303064_HW6_1A2B</h1>
+    <p>請輸入 4 個不重複的數字：</p>
+    <input type="text" id="userInput" maxlength="4" placeholder="例如：1234">
+    <button onclick="checkGuess()">提交答案</button>
+    <p id="message"></p>
+    <div id="result">
+        <table>
+            <thead>
+                <tr>
+                    <th>猜測次數</th>
+                    <th>猜測數字</th>
+                    <th>結果 (XAYB)</th>
+                </tr>
+            </thead>
+            <tbody id="history"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function generateAnswer() {
+            const digits = Array.from({ length: 10 }, (_, i) => i.toString());
+            const answer = [];
+            while (answer.length < 4) {
+                const randomIndex = Math.floor(Math.random() * digits.length);
+                answer.push(digits[randomIndex]);
+                digits.splice(randomIndex, 1);
+            }
+            return answer;
+        }
+
+        const answer = generateAnswer(); 
+        let attempts = 0; 
+
+        function isValidInput(input) {
+            if (input.length !== 4) {
+                alert("請輸入 4 個數字！");
+                return false;
+            }
+            if (!/^\d+$/.test(input)) {
+                alert("輸入只能包含數字！");
+                return false;
+            }
+            const uniqueDigits = new Set(input);
+            if (uniqueDigits.size !== 4) {
+                alert("數字不能重複！");
+                return false;
+            }
+            return true;
+        }
+
+        function checkGuess() {
+            const userInput = document.getElementById("userInput").value.trim();
+            if (!isValidInput(userInput)) return;
+
+            attempts++;
+            let A = 0, B = 0;
+
+            userInput.split("").forEach((digit, index) => {
+                if (answer.includes(digit)) {
+                    if (answer[index] === digit) {
+                        A++;
+                    } else {
+                        B++;
+                    }
+                }
+            });
+
+            const history = document.getElementById("history");
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${attempts}</td><td>${userInput}</td><td>${A}A${B}B</td>`;
+            history.appendChild(row);
+
+            document.getElementById("userInput").value = "";
+
+            if (A === 4) {
+                alert(`恭喜！你在 ${attempts} 次內猜對了答案！`);
+                document.getElementById("message").textContent = "遊戲結束！恭喜你！";
+                document.getElementById("userInput").disabled = true;
+                return;
+            }
+        }
+    </script>
+</body>
+</html>
